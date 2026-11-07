@@ -1,0 +1,27 @@
+// Única fuente de configuración. Sin secretos: todo lo de aquí es público.
+const HOST = 'vehiculos-aws-iot.duckdns.org';
+const VEHICLE_ID = 1;
+
+export const CONFIG = Object.freeze({
+  API_BASE_URL: `https://${HOST}`,
+  WSS_URL: `wss://${HOST}/ws/vehiculos/${VEHICLE_ID}`,
+  VEHICLE_ID,
+  HEALTH_PATH: '/status',        // operación de salud existente (GET)
+  DB_HEALTH_PATH: '/salud/db',   // diagnóstico de BD expuesto por el backend (ver README)
+  REQUEST_TIMEOUT_MS: 8000,
+  HEALTH_TIMEOUT_MS: 5000,
+  HEALTH_INTERVAL_MS: 20000,     // con API disponible
+  HEALTH_RETRY_MS: 8000,         // recuperación tras fallo
+  DB_INTERVAL_MS: 60000,
+  WS_BACKOFF: { min: 1000, max: 15000 },
+  JOYSTICK_DEADZONE: 0.35,
+});
+
+export const COMMANDS = Object.freeze({ STOP: 'DETENER', LED: 'CONTROL_LED', SOUND: 'CONTROL_SONIDO' });
+export const VEHICLE_DIRS = Object.freeze({ up: 'AVANZAR', down: 'RETROCEDER', left: 'GIRAR_IZQUIERDA', right: 'GIRAR_DERECHA' });
+export const ARM_DIRS = Object.freeze({ up: 'SUBIR_BRAZO', down: 'BAJAR_BRAZO', left: 'GIRAR_I_PALA', right: 'GIRAR_D_PALA' });
+export const LABELS = Object.freeze({
+  AVANZAR: 'Avanzar', RETROCEDER: 'Retroceder', GIRAR_IZQUIERDA: 'Girar izquierda', GIRAR_DERECHA: 'Girar derecha',
+  SUBIR_BRAZO: 'Subir brazo', BAJAR_BRAZO: 'Bajar brazo', GIRAR_I_PALA: 'Pala izquierda', GIRAR_D_PALA: 'Pala derecha',
+  CONTROL_LED: 'LED', CONTROL_SONIDO: 'Sonido', DETENER: 'DETENER',
+});
