@@ -16,8 +16,8 @@
 <div class="app">
   <header class="app__header">
     <div class="brand">
-      <img src="./assets/images/favicon.svg" alt="" width="32" height="32">
-      <h1 id="vehiculo-nombre" class="h5 mb-0">Cargando vehículo…</h1>
+      <img src="./assets/images/favicon.svg" alt="" width="28" height="28">
+      <h1 id="vehiculo-nombre" class="h6 mb-0">Cargando vehículo…</h1>
     </div>
     <ul class="status-list" aria-label="Estado de las conexiones">
       <li id="st-ws" class="status"><i class="bi" aria-hidden="true"></i><span class="status__label">WebSocket WSS</span><strong class="status__value"></strong></li>
@@ -27,16 +27,6 @@
   </header>
 
   <main>
-    <section class="feedback" aria-label="Mensajes de acción">
-      <p id="accion-texto" class="feedback__title">Sin acciones todavía.</p>
-      <ol class="steps">
-        <li data-step="solicitado"><i class="bi" aria-hidden="true"></i> Solicitado <span class="visually-hidden"></span></li>
-        <li data-step="aceptado"><i class="bi" aria-hidden="true"></i> Aceptado por API <span class="visually-hidden"></span></li>
-        <li data-step="evento"><i class="bi" aria-hidden="true"></i> Evento recibido <span class="visually-hidden"></span></li>
-      </ol>
-      <p id="mensaje" class="feedback__msg" role="status" aria-live="polite"></p>
-    </section>
-
     <section class="pad pad--v" aria-labelledby="t-v">
       <h2 id="t-v" class="pad__title">Vehículo</h2>
       <div id="joy-v" class="joystick" role="application" tabindex="0" aria-label="Joystick del vehículo: flechas para avanzar, retroceder y girar"></div>
@@ -49,26 +39,32 @@
       <p id="dir-a" class="pad__dir">Neutro</p>
     </section>
 
-    <section class="actions" aria-label="Acciones">
-      <button type="button" class="cmd" data-cmd="CONTROL_LED"><i class="bi bi-lightbulb-fill" aria-hidden="true"></i><span>LED</span><small class="cmd__state"></small></button>
-      <button type="button" class="cmd" data-cmd="CONTROL_SONIDO"><i class="bi bi-volume-up-fill" aria-hidden="true"></i><span>Sonido</span><small class="cmd__state"></small></button>
-      <button type="button" class="cmd cmd--stop" data-cmd="DETENER"><i class="bi bi-stop-circle-fill" aria-hidden="true"></i><span>DETENER</span><small class="cmd__state"></small></button>
-    </section>
-
-    <section class="demo" aria-labelledby="t-d">
-      <h2 id="t-d" class="pad__title">DEMO</h2>
-      <label for="demo-select" class="visually-hidden">Seleccionar DEMO</label>
-      <select id="demo-select" class="form-select" disabled><option>Cargando DEMO…</option></select>
-      <div class="demo__btns">
-        <button id="demo-iniciar" type="button" class="btn btn-warning" disabled><i class="bi bi-play-fill" aria-hidden="true"></i> Iniciar</button>
-        <button id="demo-cancelar" type="button" class="btn btn-outline-light" disabled><i class="bi bi-x-lg" aria-hidden="true"></i> Cancelar</button>
-      </div>
-      <p id="demo-estado" class="demo__estado" aria-live="polite">Sin DEMO en ejecución</p>
+    <section class="actions" aria-label="Controles">
+      <button type="button" class="cmd" data-cmd="CONTROL_LED" aria-label="LED" title="LED"><i class="bi bi-lightbulb-fill" aria-hidden="true"></i><i class="cmd__badge bi" aria-hidden="true"></i></button>
+      <button type="button" class="cmd" data-cmd="CONTROL_SONIDO" aria-label="Sonido" title="Sonido"><i class="bi bi-volume-up-fill" aria-hidden="true"></i><i class="cmd__badge bi" aria-hidden="true"></i></button>
+      <button type="button" id="btn-demo" class="cmd" aria-label="DEMO" title="DEMO" aria-haspopup="dialog"><i class="bi bi-collection-play-fill" aria-hidden="true"></i><i class="cmd__badge bi" aria-hidden="true"></i></button>
+      <button type="button" class="cmd cmd--stop" data-cmd="DETENER" aria-label="DETENER" title="DETENER"><i class="bi bi-stop-circle-fill" aria-hidden="true"></i><i class="cmd__badge bi" aria-hidden="true"></i></button>
     </section>
   </main>
 
   <footer class="credits">Desarrollado por Octavio Salas Nava · 2026</footer>
 </div>
+
+<dialog id="demo-dialog" class="demo-dialog" aria-labelledby="demo-titulo">
+  <div class="demo-dialog__head">
+    <h2 id="demo-titulo" class="h6 mb-0"><i class="bi bi-collection-play-fill" aria-hidden="true"></i> DEMO</h2>
+    <button type="button" id="demo-cerrar" class="btn-close" aria-label="Cerrar"></button>
+  </div>
+  <label for="demo-select" class="visually-hidden">Seleccionar DEMO</label>
+  <select id="demo-select" class="form-select" disabled><option>Cargando DEMO…</option></select>
+  <div class="demo-dialog__btns">
+    <button id="demo-iniciar" type="button" class="btn btn-warning" disabled><i class="bi bi-play-fill" aria-hidden="true"></i> Iniciar</button>
+    <button id="demo-cancelar" type="button" class="btn btn-outline-light" disabled><i class="bi bi-x-lg" aria-hidden="true"></i> Cancelar</button>
+  </div>
+  <p id="demo-estado" class="demo-dialog__estado" aria-live="polite">Sin DEMO en ejecución</p>
+</dialog>
+
+<div id="toast" class="toast-msg" role="status" aria-live="polite"></div>
 <script type="module" src="./js/main.js"></script>
 </body>
 </html>

@@ -10,20 +10,31 @@ const STATUS = {
   rds: { disponible: ['ok', 'Disponible', 'bi-check-circle-fill'], no_disponible: ['bad', 'No disponible', 'bi-x-circle-fill'],
          sin_verificar: ['unknown', 'Sin verificar', 'bi-question-circle-fill'] },
 };
-const STEP_ICON = { idle: 'bi-circle', wait: 'bi-hourglass-split', ok: 'bi-check-circle-fill', error: 'bi-x-circle-fill' };
-const STEP_TXT = { idle: '', wait: '— pendiente', ok: '— confirmado', error: '— error' };
-const BTN_TXT = { idle: '', enviando: 'Enviando…', aceptado: 'Aceptado', recibido: 'Recibido', error: 'Error' };
+// Estado de cada botón: icono en una esquina (nunca solo color) + nombre accesible.
+const BADGE = { enviando: 'bi-hourglass-split', aceptado: 'bi-check2', recibido: 'bi-check2-all', error: 'bi-exclamation-triangle-fill',
+                activa: 'bi-play-fill' };
+const BTN_TXT = { enviando: 'enviando', aceptado: 'aceptado por la API', recibido: 'evento recibido', error: 'error', activa: 'en curso' };
 const DEMO_TXT = { inactiva: 'Sin DEMO en ejecución', iniciando: 'Iniciando DEMO…', cancelando: 'Cancelando DEMO…' };
 
+const marcar = (b, estado, base) => {
+  b.dataset.state = estado; b.setAttribute('aria-busy', String(estado === 'enviando'));
+  $('.cmd__badge', b).className = `cmd__badge bi ${BADGE[estado] ?? ''}`;
+  b.setAttribute('aria-label', BTN_TXT[estado] ? `${base} — ${BTN_TXT[estado]}` : base);
+};
+
 export function initUI({ commands, demo, joysticks }) {
+  const dlg = $('#demo-dialog');
   $$('[data-cmd]').forEach((b) => b.addEventListener('click', () => commands.enviar(b.dataset.cmd)));
+  $('#btn-demo').addEventListener('click', () => dlg.showModal());
+  $('#demo-cerrar').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); }); // clic en el fondo
   $('#demo-iniciar').addEventListener('click', () => {
     const id = Number($('#demo-select').value);
-    if (Number.isInteger(id) && id > 0) demo.iniciar(id);
+    if (Number.isInteger(id) && id > 0) { dlg.close(); demo.iniciar(id); }
   });
-  $('#demo-cancelar').addEventListener('click', () => demo.cancelar().catch(() => {}));
+  $('#demo-cancelar').addEventListener('click', () => { dlg.close(); demo.cancelar().catch(() => {}); });
 
-  let prevDemos = null;
+  let prevDemos = null, prevMsg = null, toastTimer = null;
   const render = (s) => {
     $('#vehiculo-nombre').textContent = s.vehiculo.nombre ?? `Vehículo ${CONFIG.VEHICLE_ID}`;
 
@@ -35,24 +46,21 @@ export function initUI({ commands, demo, joysticks }) {
       $('i', el).className = `bi ${icon}`;
     }
 
-    const a = s.accion;
-    $('#accion-texto').textContent = a ? `Última acción: ${LABELS[a.nombre] ?? a.nombre}` : 'Sin acciones todavía.';
-    const st = { solicitado: a ? 'ok' : 'idle', aceptado: !a ? 'idle' : a.aceptado ? 'ok' : a.error ? 'error' : 'wait',
-                 evento: !a ? 'idle' : a.evento ? 'ok' : a.error ? 'idle' : 'wait' };
-    $$('.steps li').forEach((li) => {
-      const v = st[li.dataset.step]; li.dataset.state = v;
-      $('i', li).className = `bi ${STEP_ICON[v]}`; $('.visually-hidden', li).textContent = STEP_TXT[v];
-    });
-    const m = $('#mensaje'); m.textContent = s.mensaje?.texto ?? ''; m.dataset.level = s.mensaje?.nivel ?? 'info';
+    if (s.mensaje && s.mensaje !== prevMsg) {
+      prevMsg = s.mensaje;
+      const t = $('#toast'); t.textContent = s.mensaje.texto; t.dataset.level = s.mensaje.nivel;
+      t.classList.add('is-visible'); clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('is-visible'), 4500);
+    }
 
-    const demoActiva = s.demo.estado !== 'inactiva';
+    const a = s.accion, demoActiva = s.demo.estado !== 'inactiva';
     $$('[data-cmd]').forEach((b) => {
       const n = b.dataset.cmd;
       const v = a && a.nombre === n ? (a.error ? 'error' : a.evento ? 'recibido' : a.aceptado ? 'aceptado' : 'enviando') : 'idle';
-      b.dataset.state = v; b.setAttribute('aria-busy', String(v === 'enviando'));
-      $('.cmd__state', b).textContent = BTN_TXT[v];
+      marcar(b, v, LABELS[n] ?? n);
       b.disabled = !s.comandos[n] || (n !== COMMANDS.STOP && demoActiva);
     });
+    marcar($('#btn-demo'), demoActiva ? 'activa' : 'idle', 'DEMO');
     joysticks.forEach((j) => j.setDisabled(demoActiva || !Object.keys(s.comandos).length));
 
     const sel = $('#demo-select');
