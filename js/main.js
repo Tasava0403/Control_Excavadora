@@ -7,6 +7,7 @@ import { CommandController } from './control/commandController.js';
 import { DemoController } from './control/demoController.js';
 import { Joystick } from './components/joystick.js';
 import { initUI } from './components/ui.js';
+import { initFullscreen } from './components/fullscreen.js';
 import { mensajeUsuario } from './utils/errors.js';
 import { $ } from './utils/dom.js';
 
@@ -24,6 +25,7 @@ function crearJoystick(id, dirId, mapa) {
 }
 const joysticks = [crearJoystick('#joy-v', '#dir-v', VEHICLE_DIRS), crearJoystick('#joy-a', '#dir-a', ARM_DIRS)];
 initUI({ commands, demo, joysticks });
+initFullscreen($('#btn-fs'));
 
 async function cargarCatalogo() {
   const [v, c] = await Promise.allSettled([vehicleApi.obtenerVehiculo(CONFIG.VEHICLE_ID), vehicleApi.listarComandos(CONFIG.VEHICLE_ID)]);

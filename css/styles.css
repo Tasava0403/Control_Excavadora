@@ -8,6 +8,10 @@ body{color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,san
   padding:max(.5rem,env(safe-area-inset-top)) max(.6rem,env(safe-area-inset-right)) 0 max(.6rem,env(safe-area-inset-left))}
 .app__header{display:grid;gap:.4rem}
 .brand{display:flex;align-items:center;gap:.5rem}
+.brand h1{flex:1;min-width:0}
+.fs-btn{width:44px;height:44px;display:grid;place-items:center;border-radius:.6rem;border:1px solid var(--line);background:var(--surface);color:var(--text);font-size:1.15rem}
+.fs-btn[hidden]{display:none}
+.fs-btn:active{border-color:var(--accent)}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
 /* Indicadores compactos: icono + valor arriba, etiqueta debajo */

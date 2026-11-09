@@ -19,6 +19,8 @@ js/control/commandController.js  Reglas de comandos (joysticks y botones compart
 js/control/demoController.js     Catálogo, inicio, cancelación y eventos de DEMO
 js/components/joystick.js        Joystick (mouse, táctil, teclado)
 js/components/ui.js              Renderizado y eventos del DOM
+js/components/fullscreen.js      Botón de pantalla completa
+manifest.webmanifest             Instalación en pantalla de inicio (display: fullscreen)
 js/utils/errors.js, dom.js       Errores y utilidades
 ```
 
@@ -50,10 +52,16 @@ Todas las rutas son relativas, por lo que también funciona en `https://<usuario
 ## Comportamiento
 - **Joysticks**: vehículo (AVANZAR, RETROCEDER, GIRAR_IZQUIERDA, GIRAR_DERECHA) y brazo-pala (SUBIR_BRAZO, BAJAR_BRAZO, GIRAR_I_PALA, GIRAR_D_PALA). Solo se envía una solicitud al **cambiar** la dirección; al soltar, perder el puntero o cancelar el gesto → DETENER. Comparten un único canal de comando porque el backend guarda un solo estado.
 - **DETENER**: siempre habilitado; aborta solicitudes pendientes, descarta respuestas tardías y cancela la DEMO si existe.
-- **Evidencia en tres pasos independientes**: *Solicitado* → *Aceptado por API* (HTTP 2xx) → *Evento recibido* (llegó por WSS el código de la acción actual). Un evento WSS confirma que el backend lo publicó, **no** la ejecución física. La correlación es por código, porque el contrato no incluye identificador de evento.
+- **Evidencia por botón**: cada control muestra un icono de estado en su esquina: *enviando* (reloj) → *aceptado por la API* (✓, HTTP 2xx) → *evento recibido* (✓✓, llegó por WSS el código de la acción actual). Los errores salen en un aviso flotante. Un evento WSS confirma que el backend lo publicó, **no** la ejecución física. La correlación es por código, porque el contrato no incluye identificador de evento.
 - **WebSocket WSS** describe solo el socket del navegador; la presencia del ESP8266/ESP32 requerirá su propio latido.
-- **DEMO**: solo se elige una existente; no se inicia dos veces y bloquea comandos conflictivos. Si el evento final no llega, una salvaguarda temporal libera la interfaz.
+- **DEMO**: el botón DEMO abre una ventana (`<dialog>`) para elegir, iniciar o cancelar. Solo se elige una existente; no se inicia dos veces y bloquea comandos conflictivos. Si el evento final no llega, una salvaguarda temporal libera la interfaz.
 - **Seguridad**: sin claves ni credenciales en el cliente; datos de la API insertados con `textContent`; mensajes de error genéricos. CORS no es autenticación.
+
+## Pantalla completa
+- **Botón ⛶** (junto al nombre): Fullscreen API en Android, escritorio e iPad. Se oculta si la página ya está instalada.
+- **iPhone**: Safari no permite la Fullscreen API en páginas; usa *Compartir → Agregar a pantalla de inicio* y ábrela desde el icono.
+- **Android (Chrome)**: menú ⋮ → *Instalar aplicación* o *Agregar a pantalla de inicio*; el manifiesto pide `display: fullscreen`.
+- Para instalarla, la página debe servirse por HTTPS (GitHub Pages lo cumple).
 
 ## Pruebas A–E
 Con Postman o Thunder Client conectado a `wss://…/ws/vehiculos/1` como cliente **independiente**, captura URL, control accionado y mensaje recibido:
