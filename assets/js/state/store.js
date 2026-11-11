@@ -21,6 +21,7 @@ export const store = createStore({
   ws: 'conectando',        // en_linea | conectando | reconectando | desconectado
   aws: 'comprobando',      // disponible | comprobando | no_disponible
   rds: 'sin_verificar',    // disponible | no_disponible | sin_verificar
+  toggles: { CONTROL_LED: false, CONTROL_SONIDO: false }, // estado ESTIMADO (la API no lo informa)
   accion: null,            // { nombre, codigo, seq, solicitado, aceptado, evento, error }
   mensaje: null,           // { texto, nivel }
 });

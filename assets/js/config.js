@@ -15,9 +15,12 @@ export const CONFIG = Object.freeze({
   DB_INTERVAL_MS: 60000,
   WS_BACKOFF: { min: 1000, max: 15000 },
   JOYSTICK_DEADZONE: 0.35,
+  PULSE_MS: 300,                 // tiempo en código 9/10 antes de volver a 11
 });
 
 export const COMMANDS = Object.freeze({ STOP: 'DETENER', LED: 'CONTROL_LED', SOUND: 'CONTROL_SONIDO' });
+// Se activan con un pulso: código 9/10 un instante y luego regreso al estado 11.
+export const TOGGLE_COMMANDS = Object.freeze([COMMANDS.LED, COMMANDS.SOUND]);
 export const VEHICLE_DIRS = Object.freeze({ up: 'AVANZAR', down: 'RETROCEDER', left: 'GIRAR_IZQUIERDA', right: 'GIRAR_DERECHA' });
 export const ARM_DIRS = Object.freeze({ up: 'SUBIR_BRAZO', down: 'BAJAR_BRAZO', left: 'GIRAR_I_PALA', right: 'GIRAR_D_PALA' });
 export const LABELS = Object.freeze({

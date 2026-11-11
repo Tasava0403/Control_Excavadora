@@ -57,6 +57,7 @@ main{flex:1;display:grid;gap:.5rem;grid-template-columns:1fr 1fr;grid-template-a
   background:var(--surface-2);color:var(--text);font-size:1.5rem;padding:.3rem}
 .cmd:active:not(:disabled){transform:scale(.96);border-color:var(--accent)}
 .cmd:disabled{opacity:.45}
+.cmd[aria-pressed=true]{background:#3a2f0a;border-color:var(--accent);color:var(--accent)}
 .cmd__badge{position:absolute;top:3px;right:5px;font-size:.78rem;line-height:1;display:none}
 .cmd[data-state=enviando],.cmd[data-state=activa]{border-color:var(--accent)}.cmd[data-state=enviando] .cmd__badge,.cmd[data-state=activa] .cmd__badge{display:block;color:var(--accent)}
 .cmd[data-state=aceptado]{border-color:#8ecae6}.cmd[data-state=aceptado] .cmd__badge{display:block;color:#8ecae6}

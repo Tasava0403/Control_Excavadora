@@ -14,6 +14,10 @@ const STATUS = {
 const BADGE = { enviando: 'bi-hourglass-split', aceptado: 'bi-check2', recibido: 'bi-check2-all', error: 'bi-exclamation-triangle-fill',
                 activa: 'bi-play-fill' };
 const BTN_TXT = { enviando: 'enviando', aceptado: 'aceptado por la API', recibido: 'evento recibido', error: 'error', activa: 'en curso' };
+const TOGGLE = {
+  CONTROL_LED: { txt: ['apagado', 'encendido'], icon: ['bi-lightbulb', 'bi-lightbulb-fill'] },
+  CONTROL_SONIDO: { txt: ['desactivado', 'activado'], icon: ['bi-volume-mute-fill', 'bi-volume-up-fill'] },
+};
 const DEMO_TXT = { inactiva: 'Sin DEMO en ejecución', iniciando: 'Iniciando DEMO…', cancelando: 'Cancelando DEMO…' };
 
 const marcar = (b, estado, base) => {
@@ -57,7 +61,15 @@ export function initUI({ commands, demo, joysticks }) {
     $$('[data-cmd]').forEach((b) => {
       const n = b.dataset.cmd;
       const v = a && a.nombre === n ? (a.error ? 'error' : a.evento ? 'recibido' : a.aceptado ? 'aceptado' : 'enviando') : 'idle';
-      marcar(b, v, LABELS[n] ?? n);
+      let base = LABELS[n] ?? n;
+      const tg = TOGGLE[n];
+      if (tg) { // interruptor: icono y texto distintos, no solo color
+        const on = Boolean(s.toggles[n]);
+        base += ` ${tg.txt[on ? 1 : 0]} (estimado)`;
+        b.setAttribute('aria-pressed', String(on));
+        $('i', b).className = `bi ${tg.icon[on ? 1 : 0]}`;
+      }
+      marcar(b, v, base);
       b.disabled = !s.comandos[n] || (n !== COMMANDS.STOP && demoActiva);
     });
     marcar($('#btn-demo'), demoActiva ? 'activa' : 'idle', 'DEMO');

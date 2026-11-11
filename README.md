@@ -6,22 +6,22 @@ HTML + Bootstrap 5 + JavaScript Modules, sin compilación: se publica tal cual e
 ## Estructura
 ```
 index.html                       Documento semántico (rutas relativas ./)
-css/styles.css                   Estilos personalizados sobre Bootstrap 5
-assets/images/                   Favicon SVG + PNG 32 y 180
-js/config.js                     URLs, ID de vehículo, tiempos, mapa de direcciones (sin secretos)
-js/main.js                       Arranque y cableado
-js/state/store.js                Estado de interfaz (store con suscriptores)
-js/services/restClient.js        Fetch genérico: base URL, timeout, JSON, errores tipificados
-js/services/vehicleApi.js        Un método por endpoint documentado
-js/services/wsClient.js          Cliente WSS con reconexión exponencial
-js/services/healthMonitor.js     Sondeo de salud AWS y diagnóstico RDS
-js/control/commandController.js  Reglas de comandos (joysticks y botones comparten lógica)
-js/control/demoController.js     Catálogo, inicio, cancelación y eventos de DEMO
-js/components/joystick.js        Joystick (mouse, táctil, teclado)
-js/components/ui.js              Renderizado y eventos del DOM
-js/components/fullscreen.js      Botón de pantalla completa
+assets/css/styles.css                   Estilos personalizados sobre Bootstrap 5
+assets/images/                   Favicon SVG, PNG 32/180 e iconos 192/512
+assets/js/config.js                     URLs, ID de vehículo, tiempos, mapa de direcciones (sin secretos)
+assets/js/main.js                       Arranque y cableado
+assets/js/state/store.js                Estado de interfaz (store con suscriptores)
+assets/js/services/restClient.js        Fetch genérico: base URL, timeout, JSON, errores tipificados
+assets/js/services/vehicleApi.js        Un método por endpoint documentado
+assets/js/services/wsClient.js          Cliente WSS con reconexión exponencial
+assets/js/services/healthMonitor.js     Sondeo de salud AWS y diagnóstico RDS
+assets/js/control/commandController.js  Reglas de comandos (joysticks y botones comparten lógica)
+assets/js/control/demoController.js     Catálogo, inicio, cancelación y eventos de DEMO
+assets/js/components/joystick.js        Joystick (mouse, táctil, teclado)
+assets/js/components/ui.js              Renderizado y eventos del DOM
+assets/js/components/fullscreen.js      Botón de pantalla completa
 manifest.webmanifest             Instalación en pantalla de inicio (display: fullscreen)
-js/utils/errors.js, dom.js       Errores y utilidades
+assets/js/utils/errors.js, dom.js       Errores y utilidades
 ```
 
 ## Requisitos
@@ -51,6 +51,7 @@ Todas las rutas son relativas, por lo que también funciona en `https://<usuario
 
 ## Comportamiento
 - **Joysticks**: vehículo (AVANZAR, RETROCEDER, GIRAR_IZQUIERDA, GIRAR_DERECHA) y brazo-pala (SUBIR_BRAZO, BAJAR_BRAZO, GIRAR_I_PALA, GIRAR_D_PALA). Solo se envía una solicitud al **cambiar** la dirección; al soltar, perder el puntero o cancelar el gesto → DETENER. Comparten un único canal de comando porque el backend guarda un solo estado.
+- **LED y Sonido (interruptores por pulso)**: cada pulsación envía el código 9 (LED) o 10 (sonido), espera `PULSE_MS` (300 ms) y regresa al estado 11; si un joystick sigue activo, regresa a ese movimiento. El icono alterna encendido/apagado, pero es un estado **estimado**: la API no informa el estado real del LED ni del sonido, y se reinicia al recargar la página.
 - **DETENER**: siempre habilitado; aborta solicitudes pendientes, descarta respuestas tardías y cancela la DEMO si existe.
 - **Evidencia por botón**: cada control muestra un icono de estado en su esquina: *enviando* (reloj) → *aceptado por la API* (✓, HTTP 2xx) → *evento recibido* (✓✓, llegó por WSS el código de la acción actual). Los errores salen en un aviso flotante. Un evento WSS confirma que el backend lo publicó, **no** la ejecución física. La correlación es por código, porque el contrato no incluye identificador de evento.
 - **WebSocket WSS** describe solo el socket del navegador; la presencia del ESP8266/ESP32 requerirá su propio latido.
@@ -71,8 +72,8 @@ A) AVANZAR · B) cambio de dirección + soltar (DETENER) · C) DEMO inicio / N m
 ```bash
 git init -b main
 git add .gitignore README.md && git commit -m "chore: inicializa repositorio y documentación"
-git add index.html css assets && git commit -m "feat(ui): maqueta mobile first, favicon y estilos"
-git add js/config.js js/utils js/state js/services && git commit -m "feat(api): cliente REST, WSS con reconexión y monitor de salud"
-git add js/control js/components js/main.js && git commit -m "feat(control): joysticks, comandos, DETENER y DEMO"
+git add index.html manifest.webmanifest assets/css assets/images && git commit -m "feat(ui): maqueta mobile first, favicon y estilos"
+git add assets/js/config.js assets/js/utils assets/js/state assets/js/services && git commit -m "feat(api): cliente REST, WSS con reconexión y monitor de salud"
+git add assets/js/control assets/js/components assets/js/main.js && git commit -m "feat(control): joysticks, comandos, DETENER y DEMO"
 ```
 Publicación: *Settings → Pages → Deploy from branch → main / (root)*.
