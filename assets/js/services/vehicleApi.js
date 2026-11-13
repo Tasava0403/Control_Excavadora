@@ -12,4 +12,8 @@ export const vehicleApi = {
   cancelarDemo: (id) => request(`/vehiculos/${id}/demo/cancelar`, { method: 'POST' }),
   salud: () => request(CONFIG.HEALTH_PATH, { timeout: CONFIG.HEALTH_TIMEOUT_MS }),
   saludBD: () => request(CONFIG.DB_HEALTH_PATH, { timeout: CONFIG.HEALTH_TIMEOUT_MS }),
+  
+  // Nuevos endpoints incorporados para la vista de Monitoreo
+  obtenerUltimoEstado: (id) => request(`/vehiculos/${id}/estado`),
+  obtenerHistorialUltimos10: (id) => request(`/vehiculos/${id}/historial/ultimos-10`),
 };

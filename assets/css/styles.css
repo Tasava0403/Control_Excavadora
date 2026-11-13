@@ -99,3 +99,128 @@ main{flex:1;display:grid;gap:.5rem;grid-template-columns:1fr 1fr;grid-template-a
   main{grid-template-columns:1fr minmax(220px,.7fr) 1fr;grid-template-areas:"v act a";align-items:center}
   .actions{grid-template-columns:1fr 1fr}.cmd{min-height:64px}
 }
+
+/* --- Navegación entre Vistas --- */
+.view-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .4rem;
+  background: var(--surface);
+  padding: .3rem;
+  border: 1px solid var(--line);
+  border-radius: .7rem;
+}
+.view-nav__btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  font-size: .85rem;
+  font-weight: 600;
+  padding: .4rem;
+  border-radius: .5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+}
+.view-nav__btn:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+.view-nav__btn.active {
+  background: var(--surface-2);
+  color: var(--accent);
+  border-color: var(--line);
+}
+.view-container {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  gap: .5rem;
+}
+.view-container.active {
+  display: flex;
+}
+
+/* --- Tarjeta de Último Movimiento --- */
+.monitoring-section {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+.last-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: .8rem;
+  padding: .8rem;
+}
+.last-card__body {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+}
+.last-card__icon {
+  font-size: 1.8rem;
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+}
+.last-card__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.last-card__command {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.last-card__time {
+  font-size: .78rem;
+  color: var(--muted);
+}
+.last-card__status {
+  font-size: .75rem;
+  padding: .3rem .6rem;
+  border-radius: .4rem;
+}
+
+/* --- Tabla de Historial --- */
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.history-table-container {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: .8rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+#history-table {
+  font-size: .85rem;
+  margin-bottom: 0;
+}
+#history-table th {
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+#history-table td {
+  vertical-align: middle;
+  color: var(--text);
+  border-color: var(--line);
+}
