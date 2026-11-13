@@ -16,6 +16,14 @@ export const CONFIG = Object.freeze({
   WS_BACKOFF: { min: 1000, max: 15000 },
   JOYSTICK_DEADZONE: 0.35,
   PULSE_MS: 300,                 // tiempo en código 9/10 antes de volver a 11
+  HISTORIAL_LIMIT: 10,
+  SYNC_DEBOUNCE_MS: 250,         // agrupa ráfagas de eventos WSS en una sola consulta REST
+  SYNC_RETRY_MS: 1200,           // única re-consulta si el historial aún no refleja el evento
+  SERVER_UTC_OFFSET: null,       // p. ej. '+00:00' SOLO cuando se confirme la zona horaria del backend
+  DISPLAY_TZ: 'America/Mexico_City',
+  // Claves reales de cada fila de GET /vehiculos/{id}/historial/ultimos-10 (confirmadas con la API):
+  // { id_historial, id_vehiculo, comando, codigo, fecha_hora, origen }
+  HISTORIAL_CLAVES: { id: ['id_historial'], comando: ['comando'], fecha: ['fecha_hora'] },
 });
 
 export const COMMANDS = Object.freeze({ STOP: 'DETENER', LED: 'CONTROL_LED', SOUND: 'CONTROL_SONIDO' });

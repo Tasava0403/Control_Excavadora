@@ -77,3 +77,33 @@ git add assets/js/config.js assets/js/utils assets/js/state assets/js/services &
 git add assets/js/control assets/js/components assets/js/main.js && git commit -m "feat(control): joysticks, comandos, DETENER y DEMO"
 ```
 Publicación: *Settings → Pages → Deploy from branch → main / (root)*.
+
+## MONITOREO (práctica 4.2)
+Vista `#monitoreo` dentro del mismo sitio (navegación por hash, compatible con GitHub Pages). No requiere backend ni tablas nuevas.
+
+```
+CONTROL ─POST /vehiculos/estado─▶ API FastAPI (AWS) ─▶ RDS MySQL (estado + historial)
+MONITOREO ◀─GET estado / historial─┘        │
+MONITOREO ◀──────── WSS /ws/vehiculos/1 ◀───┘   (código plano o evento JSON de DEMO)
+```
+Archivos nuevos: `services/wsHub.js` (única conexión WSS compartida), `monitor/monitorController.js` (sincronización), `state/monitorStore.js`, `components/nav.js`, `components/monitorView.js`, `utils/fechas.js`, `utils/validators.js`.
+
+**Reglas de sincronización**: REST carga estado e historial al entrar y tras reconectar WSS; WSS solo *dispara* la consulta (debounce 250 ms, sin polling). Cada solicitud lleva token y aborta la anterior; si llega un evento durante una consulta, esa respuesta se descarta y se repite. El WS de movimientos solo trae el código, así que la fecha/hora siempre proviene de `GET /vehiculos/{id}/estado`. Los pasos de DEMO se muestran en vivo y **no** disparan consulta ni se agregan a la tabla.
+
+**Contrato confirmado**: historial = `{id_historial, id_vehiculo, comando, codigo, fecha_hora, origen}`, más reciente primero. **Pendiente**: zona horaria del servidor (`SERVER_UTC_OFFSET`). Mientras no se declare la zona, la hora se muestra como «hora del servidor».
+
+### Casos de prueba
+| # | Prueba | Estado |
+|---|---|---|
+| 1 | Carga inicial: tarjeta y tabla desde REST | Pendiente (adaptador verificado con el JSON real; falta probar en navegador) |
+| 2 | Comando desde CONTROL → tarjeta y tabla se actualizan | Pendiente |
+| 3 | Comando desde otra pestaña o cliente → MONITOREO reacciona | Pendiente |
+| 4 | Más de 10 movimientos: solo 10 filas, sin borrar datos de RDS | Pendiente |
+| 5 | Orden, duplicados y fecha/hora | Pendiente |
+| 6 | Cortar y recuperar WSS → resincronización REST | Pendiente |
+| 7 | Indicadores AWS y RDS (`/status`, `/salud/db`) | Pendiente |
+| 8 | DEMO: banner en vivo y tabla sin cambios | Pendiente |
+| 9 | CONTROL intacto: joystick, DETENER, LED/sonido | Pendiente |
+| 10 | Publicación HTTPS/WSS en GitHub Pages | Pendiente |
+
+Evidencia por prueba: captura de la URL, la vista, y el mensaje del cliente WSS independiente (Postman/Thunder Client). Un evento WSS prueba la publicación por el backend, no la ejecución física.

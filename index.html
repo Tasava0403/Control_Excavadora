@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Excavadora">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Control y Monitoreo · Excavadora IoT</title>
+  <title>Control · Excavadora IoT</title>
   <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="./assets/images/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="./assets/images/favicon-180.png">
@@ -25,26 +25,18 @@
       <h1 id="vehiculo-nombre" class="h6 mb-0">Cargando vehículo…</h1>
       <button type="button" id="btn-fs" class="fs-btn" aria-label="Pantalla completa" title="Pantalla completa" aria-pressed="false"><i class="bi bi-fullscreen" aria-hidden="true"></i></button>
     </div>
-    
-    <!-- Navegación entre Vistas (Control / Monitoreo) -->
-    <nav class="view-nav" aria-label="Navegación de vistas">
-      <button type="button" id="tab-control" class="view-nav__btn active" data-view="control" aria-selected="true">
-        <i class="bi bi-controller" aria-hidden="true"></i> Control
-      </button>
-      <button type="button" id="tab-monitoring" class="view-nav__btn" data-view="monitoring" aria-selected="false">
-        <i class="bi bi-activity" aria-hidden="true"></i> Monitoreo
-      </button>
-    </nav>
-
     <ul class="status-list" aria-label="Estado de las conexiones">
       <li id="st-ws" class="status"><i class="bi" aria-hidden="true"></i><span class="status__label">WebSocket WSS</span><strong class="status__value"></strong></li>
       <li id="st-aws" class="status"><i class="bi" aria-hidden="true"></i><span class="status__label">Servidor AWS · API de 21 servicios</span><strong class="status__value"></strong></li>
       <li id="st-rds" class="status"><i class="bi" aria-hidden="true"></i><span class="status__label">Amazon RDS</span><strong class="status__value"></strong></li>
     </ul>
+    <nav class="vistas" aria-label="Vistas">
+      <a class="vista-link" href="#control" data-vista="control"><i class="bi bi-joystick" aria-hidden="true"></i> Control</a>
+      <a class="vista-link" href="#monitoreo" data-vista="monitoreo"><i class="bi bi-activity" aria-hidden="true"></i> Monitoreo</a>
+    </nav>
   </header>
 
-  <!-- VISTA CONTROL (Práctica 4.1 intacta) -->
-  <main id="view-control" class="view-container active">
+  <main id="vista-control" aria-label="Control">
     <section class="pad pad--v" aria-labelledby="t-v">
       <h2 id="t-v" class="pad__title">Vehículo</h2>
       <div id="joy-v" class="joystick" role="application" tabindex="0" aria-label="Joystick del vehículo: flechas para avanzar, retroceder y girar"></div>
@@ -65,43 +57,35 @@
     </section>
   </main>
 
-  <!-- VISTA MONITOREO (Nueva) -->
-  <main id="view-monitoring" class="view-container" hidden>
-    <section class="monitoring-section" aria-labelledby="t-last-mov">
-      <h2 id="t-last-mov" class="pad__title">Último movimiento / Estado reportado</h2>
-      <div id="last-movement-card" class="last-card" data-state="loading">
-        <div class="last-card__body">
-          <div class="last-card__icon"><i class="bi bi-clock-history" aria-hidden="true"></i></div>
-          <div class="last-card__info">
-            <span id="last-cmd-name" class="last-card__command">Cargando último estado…</span>
-            <span id="last-cmd-time" class="last-card__time text-muted">—</span>
-          </div>
-          <div id="last-cmd-badge" class="last-card__status badge bg-secondary">Esperando</div>
-        </div>
+  <main id="vista-monitoreo" aria-labelledby="t-mon" hidden>
+    <h2 id="t-mon" class="visually-hidden">Monitoreo del vehículo</h2>
+    <section aria-labelledby="t-ultimo">
+      <div class="mon-card">
+        <h3 id="t-ultimo" class="pad__title">Último movimiento</h3>
+        <p id="mon-nombre" class="mon-card__nombre" role="status">Cargando…</p>
+        <p class="mon-card__meta"><span id="mon-codigo"></span> <time id="mon-fecha"></time></p>
+        <p id="mon-origen" class="mon-nota"></p>
+        <ul class="mon-chips" aria-label="Evidencia del último movimiento">
+          <li id="chip-wss" data-ok="false"><i class="bi" aria-hidden="true"></i> Publicado por WSS</li>
+          <li id="chip-rest" data-ok="false"><i class="bi" aria-hidden="true"></i> Leído de la API (base de datos)</li>
+          <li id="chip-fisico" data-ok="na"><i class="bi" aria-hidden="true"></i> Ejecución física: sin verificar</li>
+        </ul>
+        <p id="mon-demo" class="mon-demo" hidden></p>
+        <p id="mon-msg" class="mon-msg" role="status"></p>
       </div>
     </section>
-
-    <section class="monitoring-section" aria-labelledby="t-history">
-      <div class="history-header">
-        <h2 id="t-history" class="pad__title mb-0">Últimos 10 movimientos persistidos</h2>
-        <button type="button" id="btn-refresh-history" class="btn btn-sm btn-outline-secondary" title="Actualizar historial"><i class="bi bi-arrow-clockwise"></i></button>
-      </div>
-      <div class="table-responsive history-table-container">
-        <table class="table table-dark table-striped table-hover align-middle mb-0" id="history-table">
-          <thead>
-            <tr>
-              <th scope="col" style="width: 12%;">#</th>
-              <th scope="col" style="width: 43%;">Movimiento</th>
-              <th scope="col" style="width: 45%;">Fecha y Hora</th>
-            </tr>
-          </thead>
-          <tbody id="history-tbody">
-            <tr>
-              <td colspan="3" class="text-center text-muted py-3">Cargando historial…</td>
-            </tr>
-          </tbody>
+    <section aria-labelledby="t-hist">
+      <h3 id="t-hist" class="pad__title">Últimos 10 movimientos</h3>
+      <div class="mon-tabla table-responsive">
+        <table class="table table-sm align-middle mb-0">
+          <caption class="visually-hidden">Últimos diez movimientos individuales registrados, del más reciente al más antiguo</caption>
+          <thead><tr><th scope="col">#</th><th scope="col">Movimiento</th><th scope="col">Fecha y hora</th></tr></thead>
+          <tbody id="hist-body"></tbody>
         </table>
       </div>
+      <p id="hist-msg" class="mon-msg" role="status">Cargando…</p>
+      <p id="hist-aviso" class="mon-msg mon-msg--warn" hidden></p>
+      <p id="hist-zona" class="mon-nota"></p>
     </section>
   </main>
 

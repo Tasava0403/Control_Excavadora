@@ -1,47 +1,21 @@
 import { CONFIG, VEHICLE_DIRS, ARM_DIRS, LABELS } from './config.js';
 import { store, notificar } from './state/store.js';
 import { vehicleApi } from './services/vehicleApi.js';
-import { VehicleSocket } from './services/wsClient.js';
+import { wsHub } from './services/wsHub.js';
 import { startHealthMonitor } from './services/healthMonitor.js';
 import { CommandController } from './control/commandController.js';
 import { DemoController } from './control/demoController.js';
-import { MonitoringController } from './monitoring/monitoringController.js';
 import { Joystick } from './components/joystick.js';
 import { initUI } from './components/ui.js';
 import { initFullscreen } from './components/fullscreen.js';
+import { initNav } from './components/nav.js';
+import { initMonitorView } from './components/monitorView.js';
+import { MonitorController } from './monitor/monitorController.js';
 import { mensajeUsuario } from './utils/errors.js';
 import { $ } from './utils/dom.js';
 
 const demo = new DemoController();
 const commands = new CommandController(demo);
-const monitoring = new MonitoringController();
-
-// --- Gestión de Pestañas (Control / Monitoreo) ---
-const tabControl = $('#tab-control');
-const tabMonitoring = $('#tab-monitoring');
-const viewControl = $('#view-control');
-const viewMonitoring = $('#view-monitoring');
-
-function cambiarVista(vista) {
-  const esControl = vista === 'control';
-  tabControl.classList.toggle('active', esControl);
-  tabControl.setAttribute('aria-selected', esControl);
-  viewControl.classList.toggle('active', esControl);
-  viewControl.hidden = !esControl;
-
-  tabMonitoring.classList.toggle('active', !esControl);
-  tabMonitoring.setAttribute('aria-selected', !esControl);
-  viewMonitoring.classList.toggle('active', !esControl);
-  viewMonitoring.hidden = esControl;
-
-  if (!esControl) {
-    monitoring.inicializar(); // Carga REST fresca al abrir Monitoreo
-  }
-}
-
-tabControl.addEventListener('click', () => cambiarVista('control'));
-tabMonitoring.addEventListener('click', () => cambiarVista('monitoring'));
-$('#btn-refresh-history')?.addEventListener('click', () => monitoring.cargarHistorial());
 
 function crearJoystick(id, dirId, mapa) {
   return new Joystick($(id), {
@@ -70,23 +44,17 @@ async function cargarCatalogo() {
   }
 }
 
-// Conexión WSS unificada
-new VehicleSocket(CONFIG.WSS_URL, {
-  backoff: CONFIG.WS_BACKOFF,
-  onStatus: (ws) => store.set({ ws }),
-  onMessage: (m) => {
-    if (m.tipo === 'codigo') {
-      commands.onCodigo(m.codigo);
-      demo.onCodigo();
-      monitoring.onNuevoCodigoWSS(m.codigo);
-    } else if (m.tipo === 'json') {
-      demo.onEvento(m.data);
-      if (m.data?.tipo_evento === 'INICIO_DEMO' || m.data?.tipo_evento === 'FIN_DEMO') {
-        monitoring.cargarUltimoEstado();
-      }
-    }
-  },
-}).connect();
+// Una única conexión WSS compartida por CONTROL y MONITOREO (distinta de cualquier cliente externo de prueba).
+const monitorCtl = new MonitorController();
+wsHub.subscribe((e) => {
+  if (e.tipo === 'status') store.set({ ws: e.estado });
+  else if (e.tipo === 'codigo') { commands.onCodigo(e.codigo); demo.onCodigo(); }
+  else if (e.tipo === 'json') demo.onEvento(e.data);
+});
+wsHub.subscribe((e) => monitorCtl.onWs(e));
+initMonitorView();
+initNav({ onEnter: (v) => (v === 'monitoreo' ? monitorCtl.activar() : monitorCtl.desactivar()) });
+wsHub.start();
 
 startHealthMonitor({
   onAws: (aws) => {
