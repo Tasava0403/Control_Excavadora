@@ -649,3 +649,92 @@ body {
   background-attachment: fixed;
   background-repeat: no-repeat;
 }
+
+/* --- AJUSTE PARA MONITOREO: Tabla compacta con scroll interno --- */
+
+#vista-monitoreo {
+  display: grid;
+  grid-template-areas: none;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .6rem;
+  align-content: start;
+  align-items: start;
+  /* Permite que la vista completa haga scroll si la pantalla es muy pequeña */
+  overflow-y: auto; 
+  max-height: calc(100dvh - 135px); /* Resta el espacio aproximado del header y pestañas */
+  padding-bottom: .5rem;
+}
+
+/* Contenedor de la tabla con scroll propio y cabecera fija */
+.mon-tabla {
+  border: 1px solid rgba(184, 41, 255, 0.25);
+  border-radius: 1rem;
+  background: rgba(21, 17, 34, 0.85);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  
+  /* Altura máxima calculada para que quepa en pantalla y active el scroll */
+  max-height: calc(100dvh - 185px);
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+/* Compactar el texto y celdas de la tabla para ver más registros juntos */
+.mon-tabla table {
+  --bs-table-bg: transparent;
+  font-size: .78rem; /* Más compacto que el .9rem original */
+  color: var(--text);
+  margin-bottom: 0;
+}
+
+.mon-tabla th,
+.mon-tabla td {
+  padding: .32rem .5rem !important; /* Reduce el espacio vertical entre filas */
+  overflow-wrap: anywhere;
+  border-color: var(--line) !important;
+  line-height: 1.2;
+}
+
+/* Cabecera fija (sticky) para no perder los títulos al hacer scroll */
+.mon-tabla thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  color: var(--muted);
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  background-color: #1e1832; /* Fondo sólido para que el texto no se transparente al bajar */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Estilizar la barra de scroll para que combine con el tema morado */
+.mon-tabla::-webkit-scrollbar,
+#vista-monitoreo::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.mon-tabla::-webkit-scrollbar-track,
+#vista-monitoreo::-webkit-scrollbar-track {
+  background: rgba(11, 9, 20, 0.5);
+  border-radius: 4px;
+}
+
+.mon-tabla::-webkit-scrollbar-thumb,
+#vista-monitoreo::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+
+.mon-tabla::-webkit-scrollbar-thumb:hover,
+#vista-monitoreo::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+@media (min-width: 640px) {
+  #vista-monitoreo {
+    grid-template-columns: minmax(240px, .8fr) minmax(0, 1.2fr);
+  }
+}
